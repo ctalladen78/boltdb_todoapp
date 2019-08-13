@@ -1,8 +1,8 @@
 package main
 
 import (
+	"golang-projects/boltdb_todoapp/boltdb"
 	"golang-projects/boltdb_todoapp/cmd"
-	"golang-projects/boltdb_todoapp/stormdb"
 	"log"
 	"os"
 	"path/filepath"
@@ -11,6 +11,7 @@ import (
 )
 
 var db store.Store
+var storePath string
 
 const (
 	GET = "get"
@@ -28,7 +29,7 @@ func main() {
 	//dbPath := filepath.Join(home, "store.db")
 	//log.Println(dbPath)
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	storePath := filepath.Join(dir, "/store.db")
+	storePath = filepath.Join(dir, "/store.db")
 	//log.Println(dir)
 	log.Println(storePath)
 
@@ -56,20 +57,20 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			if err := db.DeleteTask(id); err != nil {
+			if err := db.DeleteTask(storePath, id); err != nil {
 				log.Print(err)
 			}
 		}
 	default:
 		// get all todos
-		db.AllTasks()
+		db.AllTasks(storePath)
 	}
 
 }
 
 func getTodos() {
 
-	tasks, err := db.AllTasks()
+	tasks, err := db.AllTasks(storePath)
 	// error handling
 	if err != nil {
 		return
@@ -83,7 +84,7 @@ func putTodo(t string) {
 
 	// stdin argument (./boltdb_todoapp "first todo")
 	//task := strings.Join(t, " ")
-	id, err := db.CreateTask(t)
+	id, err := db.CreateTask(storePath, t)
 	if err != nil {
 		log.Fatal(err)
 	}

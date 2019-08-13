@@ -27,19 +27,25 @@ func (s Store) Init(dbPath string) error {
 		return err
 	}
 
+	s.db = db
+	log.Printf("DBPATH init %s", s.db)
 	return db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists(taskBucket)
 		log.Printf("INIT SUCCESS")
-		s.db = db
 		return err
 	})
 }
 
-func (s Store) CreateTask(task string) (int, error) {
-	log.Printf("XXXXX DB %s", s.db)
+func (s Store) CreateTask(dbPath string, task string) (int, error) {
+	db, err := bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
+	defer db.Close()
+	if err != nil {
+		return 0, err
+	}
+	log.Printf("XXXXX DB %s", db)
 	var id int
 	// create write transaction
-	err := s.db.Update(func(tx *bolt.Tx) error {
+	err = db.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket(taskBucket)
 		id64, _ := bucket.NextSequence()
 		id = int(id64)
@@ -52,9 +58,14 @@ func (s Store) CreateTask(task string) (int, error) {
 	return id, nil
 }
 
-func (s Store) AllTasks() ([]Task, error) {
+func (s Store) AllTasks(dbPath string) ([]Task, error) {
+	db, err := bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
+	defer db.Close()
+	if err != nil {
+		return nil, err
+	}
 	var tasks []Task
-	err := s.db.View(func(tx *bolt.Tx) error {
+	err = db.View(func(tx *bolt.Tx) error {
 		buck := tx.Bucket(taskBucket)
 		cur := buck.Cursor()
 		for k, v := cur.First(); k != nil; k, v = cur.Next() {
@@ -71,8 +82,13 @@ func (s Store) AllTasks() ([]Task, error) {
 	return tasks, nil
 }
 
-func (s Store) DeleteTask(key int) error {
-	err := s.db.Update(func(tx *bolt.Tx) error {
+func (s Store) DeleteTask(dbPath string, key int) error {
+	db, err := bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
+	defer db.Close()
+	if err != nil {
+		return err
+	}
+	err = db.Update(func(tx *bolt.Tx) error {
 		buck := tx.Bucket(taskBucket)
 		return buck.Delete(itob(key))
 	})
