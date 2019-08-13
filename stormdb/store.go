@@ -1,16 +1,19 @@
-package main
+package store
 
-import "github.com/boltdb/bolt"
-
-// import asdine/armor
+import "github.com/asdine/storm"
 
 type Store struct {
-	db *bolt.DB
+	db *storm.DB
 }
 
 type Task struct {
-	Id    []byte
+	Key   int
 	Value []byte
+}
+
+func (s Store) Init(path string) error {
+
+	return nil
 }
 
 func (s Store) AllTasks() ([]*Task, error) {
@@ -22,4 +25,8 @@ func (s Store) AllTasks() ([]*Task, error) {
 func (s Store) CreateTask(t string) (int, error) {
 
 	return -1, nil
+}
+
+func (s Store) DeleteTask(key int) error {
+	return nil
 }
