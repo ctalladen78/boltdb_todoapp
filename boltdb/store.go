@@ -19,7 +19,7 @@ type Task struct {
 	Value string
 }
 
-func (s Store) Init(dbPath string) error {
+func (s *Store) Init(dbPath string) error {
 	var err error
 	db, err := bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
 	defer db.Close()
@@ -28,7 +28,7 @@ func (s Store) Init(dbPath string) error {
 	}
 
 	s.db = db
-	log.Printf("DBPATH init %s", s.db)
+	log.Printf("DBPATH  %s", s.db)
 	return db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists(taskBucket)
 		log.Printf("INIT SUCCESS")
@@ -36,13 +36,13 @@ func (s Store) Init(dbPath string) error {
 	})
 }
 
-func (s Store) CreateTask(dbPath string, task string) (int, error) {
+func (s *Store) CreateTask(dbPath string, task string) (int, error) {
 	db, err := bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
 	defer db.Close()
 	if err != nil {
 		return 0, err
 	}
-	log.Printf("XXXXX DB %s", db)
+	log.Printf("XXXXX DB %s", s.db)
 	var id int
 	// create write transaction
 	err = db.Update(func(tx *bolt.Tx) error {
@@ -58,7 +58,7 @@ func (s Store) CreateTask(dbPath string, task string) (int, error) {
 	return id, nil
 }
 
-func (s Store) AllTasks(dbPath string) ([]Task, error) {
+func (s *Store) AllTasks(dbPath string) ([]Task, error) {
 	db, err := bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
 	defer db.Close()
 	if err != nil {
@@ -82,7 +82,7 @@ func (s Store) AllTasks(dbPath string) ([]Task, error) {
 	return tasks, nil
 }
 
-func (s Store) DeleteTask(dbPath string, key int) error {
+func (s *Store) DeleteTask(dbPath string, key int) error {
 	db, err := bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
 	defer db.Close()
 	if err != nil {

@@ -2,6 +2,21 @@
 
 
 [[projects]]
+  digest = "1:f7499626626215283473733b7428e3b26457a92cf9dbb1518262fbc4f7523423"
+  name = "github.com/asdine/storm"
+  packages = [
+    ".",
+    "codec",
+    "codec/json",
+    "index",
+    "internal",
+    "q",
+  ]
+  pruneopts = "UT"
+  revision = "e0f77eada154c7c2670527a8566d3c045880224f"
+  version = "v2.2.1"
+
+[[projects]]
   digest = "1:f2ac2c724fc8214bb7b9dd6d4f5b7a983152051f5133320f228557182263cb94"
   name = "github.com/etcd-io/bbolt"
   packages = ["."]
@@ -16,14 +31,6 @@
   pruneopts = "UT"
   revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
   version = "v1.0"
-
-[[projects]]
-  digest = "1:5d231480e1c64a726869bc4142d270184c419749d34f167646baa21008eb0a79"
-  name = "github.com/mitchellh/go-homedir"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "af06845cf3004701891bf4fdb884bfe4920b3727"
-  version = "v1.1.0"
 
 [[projects]]
   digest = "1:e096613fb7cf34743d49af87d197663cfccd61876e2219853005a57baedfa562"
@@ -42,6 +49,14 @@
   version = "v1.0.3"
 
 [[projects]]
+  digest = "1:f2ac2c724fc8214bb7b9dd6d4f5b7a983152051f5133320f228557182263cb94"
+  name = "go.etcd.io/bbolt"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "a0458a2b35708eef59eb5f620ceb3cd1c01a824d"
+  version = "v1.3.3"
+
+[[projects]]
   branch = "master"
   digest = "1:fdfd985fe7956d77128572032636b5c1b7b58a81acd7089e96923e2f9539c573"
   name = "golang.org/x/sys"
@@ -53,8 +68,8 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/asdine/storm",
     "github.com/etcd-io/bbolt",
-    "github.com/mitchellh/go-homedir",
     "github.com/spf13/cobra",
   ]
   solver-name = "gps-cdcl"

@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	//homedir "github.com/mitchellh/go-homedir"
 )
 
 var db store.Store
@@ -25,13 +24,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	//home, _ := homedir.Dir()
-	//dbPath := filepath.Join(home, "store.db")
-	//log.Println(dbPath)
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	storePath = filepath.Join(dir, "/store.db")
-	//log.Println(dir)
-	log.Println(storePath)
+	// log.Println(storePath)
 
 	err = db.Init(storePath)
 	if err != nil {
