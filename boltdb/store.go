@@ -5,13 +5,17 @@ import (
 	"log"
 	"time"
 
-	bolt "github.com/etcd-io/bbolt"
+	// bolt "github.com/etcd-io/bbolt"
+	// "github.com/boltdb/bolt"
+	"github.com/boltdb/bolt"
+	"github.com/timshannon/bolthold"
 )
 
 var taskBucket = []byte("tasks")
 
 type Store struct {
-	Db     *bolt.DB
+	// Db     *bolt.DB
+	Db     *bolthold.Store
 	Bucket []byte
 }
 
@@ -23,7 +27,8 @@ type Task struct {
 
 func (s *Store) Init(dbPath string) error {
 	var err error
-	db, err := bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
+	// db, err := bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
+	db, err := bolthold.Open(dbPath, 0600, nil)
 	defer db.Close()
 	if err != nil {
 		return err
@@ -32,11 +37,12 @@ func (s *Store) Init(dbPath string) error {
 	s.Db = db
 	s.Bucket = taskBucket
 	log.Printf("DBPATH  %s", s.Db)
-	return db.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucketIfNotExists(s.Bucket)
-		log.Printf("INIT SUCCESS")
-		return err
-	})
+	// return db.Update(func(tx *bolt.Tx) error {
+	// 	_, err := tx.CreateBucketIfNotExists(s.Bucket)
+	// 	log.Printf("INIT SUCCESS")
+	// 	return err
+	// })
+
 }
 
 func (s *Store) CreateTask(dbPath string, task string) (int, error) {
@@ -96,6 +102,16 @@ func (s *Store) DeleteTask(dbPath string, key int) error {
 		return buck.Delete(itob(key))
 	})
 	return err
+}
+
+// make queries using bolthold
+func (s *Store) Select(id int) (*Task, error) {
+	t := &Task{}
+	// s.Db.Find(bolthold.Where())
+	// 	err := db.Find(&value, bolthold.Where(bolthold.Key).Eq(data))
+	err := s.Db.Get(id, t)
+
+	return t, nil
 }
 
 // int to byte slice

@@ -1,9 +1,8 @@
 package main
 
 import (
-	// "golang-projects/boltdb_todoapp/boltdb"
+	"golang-projects/boltdb_todoapp/boltdb"
 	"golang-projects/boltdb_todoapp/cmd"
-	"golang-projects/boltdb_todoapp/stormdb"
 	"log"
 	"os"
 	"path/filepath"
@@ -14,9 +13,10 @@ var db store.Store
 var storePath string
 
 const (
-	GET = "get"
-	PUT = "new"
-	DEL = "delete"
+	GET  = "get"
+	PUT  = "new"
+	DEL  = "delete"
+	FIND = "find"
 )
 
 func main() {
@@ -26,7 +26,7 @@ func main() {
 	}
 
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	storePath = filepath.Join(dir, "/storm.db")
+	storePath = filepath.Join(dir, "/bolt.db")
 	log.Println(storePath)
 
 	err = db.Init(storePath)
@@ -61,6 +61,16 @@ func main() {
 				log.Print(err)
 			}
 		}
+	case FIND:
+		{
+			// query by key
+			id, err := strconv.Atoi(os.Args[2])
+			if err != nil {
+				log.Fatal(err)
+			}
+			db.Select(id)
+
+		}
 	default:
 		// get all todos
 		db.AllTasks(storePath)
@@ -76,8 +86,7 @@ func getTodos() {
 		return
 	}
 	for _, task := range tasks {
-		// log.Printf("%d : %s \n", task.Key, task.Value)
-		log.Printf("%s", task.Value)
+		log.Printf("%d : %s \n", task.Key, task.Value)
 	}
 }
 
