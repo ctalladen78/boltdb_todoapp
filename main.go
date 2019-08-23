@@ -1,8 +1,9 @@
 package main
 
 import (
-	"golang-projects/boltdb_todoapp/boltdb"
+	// "golang-projects/boltdb_todoapp/boltdb"
 	"golang-projects/boltdb_todoapp/cmd"
+	"golang-projects/boltdb_todoapp/stormdb"
 	"log"
 	"os"
 	"path/filepath"
@@ -25,8 +26,8 @@ func main() {
 	}
 
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	storePath = filepath.Join(dir, "/store.db")
-	// log.Println(storePath)
+	storePath = filepath.Join(dir, "/storm.db")
+	log.Println(storePath)
 
 	err = db.Init(storePath)
 	if err != nil {
@@ -34,16 +35,20 @@ func main() {
 	}
 
 	// TODO run echo webapp
-	todo := os.Args[1]
-	if todo == "" {
+	input := os.Args[1]
+	if input == "" {
 		log.Fatal("pls enter a command")
 	}
-	log.Print("command: ", string(todo))
+	log.Print("command: ", string(input))
 
-	switch todo {
+	switch input {
 	case GET:
 		getTodos()
 	case PUT:
+		todo := os.Args[2]
+		if input == "" {
+			log.Fatal("pls enter a command")
+		}
 		putTodo(string(todo))
 	case DEL:
 		{
@@ -71,7 +76,8 @@ func getTodos() {
 		return
 	}
 	for _, task := range tasks {
-		log.Printf("%d : %s \n", task.Key, task.Value)
+		// log.Printf("%d : %s \n", task.Key, task.Value)
+		log.Printf("%s", task.Value)
 	}
 }
 

@@ -11,9 +11,11 @@ import (
 var taskBucket = []byte("tasks")
 
 type Store struct {
-	db *bolt.DB
+	Db     *bolt.DB
+	Bucket []byte
 }
 
+// model
 type Task struct {
 	Key   int
 	Value string
@@ -27,10 +29,11 @@ func (s *Store) Init(dbPath string) error {
 		return err
 	}
 
-	s.db = db
-	log.Printf("DBPATH  %s", s.db)
+	s.Db = db
+	s.Bucket = taskBucket
+	log.Printf("DBPATH  %s", s.Db)
 	return db.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucketIfNotExists(taskBucket)
+		_, err := tx.CreateBucketIfNotExists(s.Bucket)
 		log.Printf("INIT SUCCESS")
 		return err
 	})
@@ -42,7 +45,7 @@ func (s *Store) CreateTask(dbPath string, task string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	log.Printf("XXXXX DB %s", s.db)
+	log.Printf("XXXXX DB %s", db)
 	var id int
 	// create write transaction
 	err = db.Update(func(tx *bolt.Tx) error {
@@ -66,7 +69,7 @@ func (s *Store) AllTasks(dbPath string) ([]Task, error) {
 	}
 	var tasks []Task
 	err = db.View(func(tx *bolt.Tx) error {
-		buck := tx.Bucket(taskBucket)
+		buck := tx.Bucket(s.Bucket)
 		cur := buck.Cursor()
 		for k, v := cur.First(); k != nil; k, v = cur.Next() {
 			tasks = append(tasks, Task{
@@ -89,7 +92,7 @@ func (s *Store) DeleteTask(dbPath string, key int) error {
 		return err
 	}
 	err = db.Update(func(tx *bolt.Tx) error {
-		buck := tx.Bucket(taskBucket)
+		buck := tx.Bucket(s.Bucket)
 		return buck.Delete(itob(key))
 	})
 	return err

@@ -17,6 +17,14 @@
   version = "v2.2.1"
 
 [[projects]]
+  digest = "1:0f98f59e9a2f4070d66f0c9c39561f68fcd1dc837b22a852d28d0003aebd1b1e"
+  name = "github.com/boltdb/bolt"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8"
+  version = "v1.3.1"
+
+[[projects]]
   digest = "1:f2ac2c724fc8214bb7b9dd6d4f5b7a983152051f5133320f228557182263cb94"
   name = "github.com/etcd-io/bbolt"
   packages = ["."]
@@ -69,6 +77,9 @@
   analyzer-version = 1
   input-imports = [
     "github.com/asdine/storm",
+    "github.com/asdine/storm/codec/json",
+    "github.com/asdine/storm/q",
+    "github.com/boltdb/bolt",
     "github.com/etcd-io/bbolt",
     "github.com/spf13/cobra",
   ]
