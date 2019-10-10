@@ -17,11 +17,11 @@ type model struct {
 const file = "store.db"
 
 // will be exported
-type bboltStore struct {
+type dbStore struct {
 	db *bolt.DB
 }
 
-func (this *bboltStore) Init() error {
+func (this *dbStore) Init() error {
 	// store := config.Options("store.db")
 	db, err := bolt.Open(file, 0666, &bolt.Options{Timeout: 1 * time.Second})
 	defer db.Close()
@@ -37,7 +37,7 @@ func (this *bboltStore) Init() error {
 	return err
 }
 
-func (this *bboltStore) SaveData(mod *model) error {
+func (this *dbStore) SaveData(mod *model) error {
 	err := this.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("bucket_name"))
 		return b.Put([]byte(mod.KeyId), mod.Payload)
@@ -45,12 +45,12 @@ func (this *bboltStore) SaveData(mod *model) error {
 	return err
 }
 
-func (this *bboltStore) GetData() ([]*model, error) {
+func (this *dbStore) GetData() ([]*model, error) {
 	//mod := &model{}
 	var result []*model
 	err := this.db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte("bucket_name"))
-		cursor := bucket.Cursor()
+		cursor := bucket.Cursor() // current
 		limit := 16
 		idx := 0
 		var temp []*model

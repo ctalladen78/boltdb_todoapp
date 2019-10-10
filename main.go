@@ -68,7 +68,7 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			db.Select(id)
+			db.GetOne(storePath, id)
 
 		}
 	default:

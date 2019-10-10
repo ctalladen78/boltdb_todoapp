@@ -5,17 +5,15 @@ import (
 	"log"
 	"time"
 
-	// bolt "github.com/etcd-io/bbolt"
+	bolt "github.com/etcd-io/bbolt"
 	// "github.com/boltdb/bolt"
-	"github.com/boltdb/bolt"
-	"github.com/timshannon/bolthold"
 )
 
 var taskBucket = []byte("tasks")
 
 type Store struct {
-	// Db     *bolt.DB
-	Db     *bolthold.Store
+	Db *bolt.DB
+	// Db     *bolthold.Store
 	Bucket []byte
 }
 
@@ -27,8 +25,8 @@ type Task struct {
 
 func (s *Store) Init(dbPath string) error {
 	var err error
-	// db, err := bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
-	db, err := bolthold.Open(dbPath, 0600, nil)
+	db, err := bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
+	// db, err := bolthold.Open(dbPath, 0600, nil)
 	defer db.Close()
 	if err != nil {
 		return err
@@ -37,11 +35,12 @@ func (s *Store) Init(dbPath string) error {
 	s.Db = db
 	s.Bucket = taskBucket
 	log.Printf("DBPATH  %s", s.Db)
-	// return db.Update(func(tx *bolt.Tx) error {
-	// 	_, err := tx.CreateBucketIfNotExists(s.Bucket)
-	// 	log.Printf("INIT SUCCESS")
-	// 	return err
-	// })
+	return db.Update(func(tx *bolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists(s.Bucket)
+		log.Printf("INIT SUCCESS")
+		return err
+	})
+	return err
 
 }
 
@@ -105,12 +104,30 @@ func (s *Store) DeleteTask(dbPath string, key int) error {
 }
 
 // make queries using bolthold
-func (s *Store) Select(id int) (*Task, error) {
+func (s *Store) GetOne(dbPath string, id int) (*Task, error) {
+	db, err := bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
+	defer db.Close()
+	if err != nil {
+		return nil, err
+	}
 	t := &Task{}
 	// s.Db.Find(bolthold.Where())
-	// 	err := db.Find(&value, bolthold.Where(bolthold.Key).Eq(data))
-	err := s.Db.Get(id, t)
-
+	err = db.View(func(tx *bolt.Tx) error {
+		buck := tx.Bucket(s.Bucket)
+		cur := buck.Cursor()
+		for k, v := cur.First(); k != nil; k, v = cur.Next() {
+			if btoi(k) == id {
+				t = &Task{
+					Key:   btoi(k),
+					Value: string(v), // making sure its immutable
+				}
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
 	return t, nil
 }
 

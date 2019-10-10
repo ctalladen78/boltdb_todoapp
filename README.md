@@ -1,4 +1,12 @@
 
+### how to run
+	$ go clean
+	$ go build
+	./boltdb_todoapp get
+	./boltdb_todoapp new
+	./boltdb_todoapp delete
+	./boltdb_todoapp find
+
 ### schema
 todoitem
 
