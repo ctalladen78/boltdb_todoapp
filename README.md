@@ -11,11 +11,13 @@
 todoitem
 
 ### simple feature
-use cobra cli framework
 use bolt object
 open close db
 seed db
+create one
+update one
 get all
+get one
 
 ### intermediate feature
 query items
