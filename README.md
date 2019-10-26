@@ -1,5 +1,5 @@
 
-[![Go Report Card] (https://goreportcard.com/badge/github.com/ctalladen78/boltdb_todoapp)]
+[![Go Report Card](https://goreportcard.com/badge/github.com/ctalladen78/boltdb_todoapp)](https://goreportcard.com/report/github.com/ctalladen78/boltdb_todoapp)
 
 ### how to run
 	$ go clean
