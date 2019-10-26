@@ -1,4 +1,6 @@
 
+[![Go Report Card] (https://goreportcard.com/badge/github.com/ctalladen78/boltdb_todoapp)]
+
 ### how to run
 	$ go clean
 	$ go build
